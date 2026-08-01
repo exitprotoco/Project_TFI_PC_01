@@ -1,0 +1,618 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tiyese Financial Initiative</title>
+    <style>
+        :root {
+            --primary: #010056;
+            --secondary: #e0f2f1;
+            --accent: #ff9800;
+            --danger: #d32f2f;
+            --success: #2e7d32;
+            --text: #333;
+            --bg: #f0f4f8;
+            --card-bg: #fff;
+            --border: #cddc39;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+
+        body { background-color: var(--bg); color: var(--text); padding: 20px; line-height: 1.6; }
+
+        header { background: var(--primary); color: white; padding: 20px; border-radius: 8px; margin-bottom: 20px; text-align: center; }
+        header h1 { margin-bottom: 5px; }
+        
+        .admin-panel { background: #fff3e0; border-left: 5px solid var(--accent); padding: 15px; margin-bottom: 20px; border-radius: 4px; }
+        .admin-header-row { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 15px;}
+        
+        /* Committee Form */
+        .committee-form { background: #ffe0b2; padding: 15px; border-radius: 4px; display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px; }
+        .committee-role h4 { margin-bottom: 5px; color: #e65100; font-size: 14px;}
+        .committee-role input { width: 100%; margin-bottom: 5px; padding: 8px; border: 1px solid #ccc; border-radius: 4px;}
+
+        /* Alerts & Flags */
+        .alerts-container { margin-bottom: 20px; }
+        .alert { padding: 12px; margin-bottom: 10px; border-radius: 4px; font-weight: bold; display: flex; align-items: center; gap: 10px;}
+        .alert-meeting { background-color: #e3f2fd; color: #1565c0; border-left: 4px solid #1565c0; }
+        .alert-danger { background-color: #ffebee; color: var(--danger); border-left: 4px solid var(--danger); }
+        .alert-warning { background-color: #fff8e1; color: #f57f17; border-left: 4px solid #f57f17; }
+
+        /* Summary Cards */
+        .summary-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 20px; }
+        .card { background: var(--card-bg); padding: 15px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); text-align: center; border-bottom: 4px solid var(--primary); }
+        .card h3 { font-size: 13px; color: #666; text-transform: uppercase; }
+        .card p { font-size: 22px; font-weight: bold; color: var(--primary); margin-top: 5px;}
+        
+        .info-card { background: #e8f5e9; border-bottom: 4px solid var(--success); text-align: left;}
+        .info-card p { font-size: 14px; color: #333; font-weight: normal;}
+
+        /* Forms & Tables */
+        .actions-section { background: var(--card-bg); padding: 20px; border-radius: 8px; margin-bottom: 20px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); overflow-x: auto;}
+        .actions-section h2 { margin-bottom: 15px; color: var(--primary); font-size: 18px; border-bottom: 2px solid var(--secondary); padding-bottom: 5px; }
+        .form-row { display: flex; gap: 10px; margin-bottom: 15px; flex-wrap: wrap; align-items: center; }
+        input, select, button { padding: 10px; border: 1px solid #ccc; border-radius: 4px; font-size: 14px; }
+        button { background: var(--primary); color: white; border: none; cursor: pointer; font-weight: bold; transition: 0.3s; }
+        button:hover { background: #003d36; }
+        .btn-pay { background: var(--success); margin-top: 10px; width: 100%;}
+        .btn-pay:hover { background: #1b5e20; }
+        .btn-danger { background: var(--danger); }
+        .btn-danger:hover { background: #9a0007; }
+        .btn-save { background: var(--accent); color: white; width: 100%; margin-top: 10px;}
+
+        /* Loan Ledger Table */
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; min-width: 800px;}
+        th, td { padding: 12px; text-align: left; border-bottom: 1px solid #ddd; }
+        th { background-color: var(--secondary); color: var(--primary); }
+        
+        /* Cascading Views */
+        .cascading-view { display: flex; flex-direction: column; gap: 10px; margin-bottom: 30px; }
+        details { background: var(--card-bg); border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); overflow: hidden; }
+        summary { padding: 15px; font-weight: bold; cursor: pointer; background: var(--secondary); color: var(--primary); list-style: none; display: flex; justify-content: space-between; align-items: center; transition: background 0.2s; }
+        summary::-webkit-details-marker { display: none; }
+        summary:hover { background: #b2dfdb; }
+        .details-content { padding: 15px; border-top: 1px solid #ddd; display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .member-stat-box { background: #f9f9f9; padding: 15px; border-radius: 5px; border: 1px solid #eee; }
+        .member-stat-box h4 { font-size: 12px; color: #777; margin-bottom: 10px; border-bottom: 1px solid #ddd; padding-bottom: 5px;}
+        
+        .status-badge { padding: 4px 8px; border-radius: 12px; font-size: 12px; color: white; display: inline-block; text-align: center;}
+        .bg-success { background: var(--success); }
+        .bg-danger { background: var(--danger); }
+        .bg-warning { background: var(--accent); }
+        .bg-info { background: #0288d1; }
+
+        /* Loan Summary Splits */
+        .loan-summary-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .summary-list-box { background: #f9f9f9; padding: 15px; border-radius: 8px; border: 1px solid #eee;}
+        .summary-list-box ul { list-style-type: none; padding-left: 0; }
+        .summary-list-box li { padding: 8px 0; border-bottom: 1px dashed #ddd; display: flex; justify-content: space-between;}
+        .summary-list-box li:last-child { border-bottom: none; }
+
+        .active-loan-item { background: #fffde7; padding: 10px; border: 1px solid #fff59d; border-radius: 5px; margin-bottom: 10px; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Tiyese Financial Initiative</h1>
+        <p>Regulations: MK 200,000 Target (July & Aug). 20% Interest/mo. Loans ≥500k get up to 2 months.</p>
+    </header>
+
+    <div class="admin-panel">
+        <div class="admin-header-row">
+            <div>
+                <strong>🗓️ System Clock:</strong> 
+                <input type="date" id="system-date" onchange="updateSystemDate()">
+            </div>
+            <div id="meeting-flag" class="status-badge bg-info">Next Meeting: Calculating...</div>
+            <button class="btn-danger" onclick="resetAllData()">Reset All Data</button>
+        </div>
+        
+        <details>
+            <summary style="background: #ffe0b2; color: #e65100; border-radius: 4px; padding: 10px;">⚙️ Edit Committee & Bank Details</summary>
+            <div class="committee-form">
+                <div class="committee-role">
+                    <h4>Chairperson</h4>
+                    <input type="text" id="chair-name" placeholder="Name">
+                    <input type="text" id="chair-phone" placeholder="Phone Number">
+                </div>
+                <div class="committee-role">
+                    <h4>Secretary</h4>
+                    <input type="text" id="sec-name" placeholder="Name">
+                    <input type="text" id="sec-phone" placeholder="Phone Number">
+                </div>
+                <div class="committee-role">
+                    <h4>Treasurer (Bank Info)</h4>
+                    <input type="text" id="tres-name" placeholder="Name">
+                    <input type="text" id="tres-phone" placeholder="Phone Number">
+                    <input type="text" id="tres-bank" placeholder="Bank Name (e.g. National Bank)">
+                    <input type="text" id="tres-acc" placeholder="Account Number">
+                </div>
+            </div>
+            <button class="btn-save" onclick="saveCommittee()">Save Committee Info</button>
+        </details>
+    </div>
+
+    <div class="alerts-container" id="alerts-area"></div>
+
+    <div class="summary-cards">
+        <div class="card info-card">
+            <h3>🏛️ Repayment Bank Details</h3>
+            <p style="margin-top: 10px;"><strong>Bank:</strong> <span id="display-bank">Not set</span></p>
+            <p><strong>Account:</strong> <span id="display-acc">Not set</span></p>
+            <p><strong>Name:</strong> <span id="display-tres">Not set</span> (Treasurer)</p>
+            <p style="font-size: 12px; color: #666; margin-top: 5px;">*Please send proof of payment to the Treasurer's phone: <span id="display-tres-phone">N/A</span></p>
+        </div>
+        <div class="card">
+            <h3>Total Expected Pool</h3>
+            <p id="total-pool">MK 2,000,000</p>
+        </div>
+        <div class="card">
+            <h3>Actual Cash Contributed</h3>
+            <p id="total-contributions">MK 0</p>
+        </div>
+        <div class="card">
+            <h3>Total Interest Earned</h3>
+            <p id="total-interest">MK 0</p>
+        </div>
+        <div class="card">
+            <h3>Value of Active Loans</h3>
+            <p id="active-loans-value">MK 0</p>
+        </div>
+    </div>
+
+    <div class="actions-section">
+        <h2>📊 Loan Status Summary</h2>
+        <div class="loan-summary-grid">
+            <div class="summary-list-box">
+                <h4 style="color: var(--accent); margin-bottom: 10px;">Members WITH Active Loans</h4>
+                <ul id="members-with-loans"></ul>
+            </div>
+            <div class="summary-list-box">
+                <h4 style="color: var(--success); margin-bottom: 10px;">Members WITHOUT Loans</h4>
+                <ul id="members-without-loans"></ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="actions-section">
+        <h2>💰 Record Contributions</h2>
+        <div class="form-row">
+            <select id="contrib-member"></select>
+            <select id="contrib-month">
+                <option value="July">July Installment</option>
+                <option value="August">August Installment</option>
+            </select>
+            <input type="number" id="contrib-amount" placeholder="Amount" max="100000">
+            <button onclick="addContribution()">Save Contribution</button>
+        </div>
+        <small style="color: #666;">*Members who have fully paid (100k July & 100k Aug) are hidden from this list.</small>
+    </div>
+
+    <div class="actions-section">
+        <h2>🏦 Issue Loan</h2>
+        <div class="form-row">
+            <select id="loan-member"></select>
+            <input type="number" id="loan-amount" placeholder="Loan Amount" oninput="checkLoanRules()">
+            <input type="date" id="loan-issue-date" placeholder="Issue Date">
+            <select id="loan-months">
+                <option value="1">1 Month</option>
+            </select>
+            <button onclick="issueLoan()">Issue Loan</button>
+        </div>
+        <small id="loan-rule-hint" style="color: var(--accent); font-weight: bold;"></small>
+        <br><small style="color: #666;">*Members with active loans totaling MK 500,000 or more are hidden from this list.</small>
+    </div>
+
+    <h2>👥 Members Progress</h2>
+    <div class="cascading-view" id="members-container"></div>
+
+    <div class="actions-section">
+        <h2>📜 Comprehensive Loan Ledger</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Member</th>
+                    <th>Status</th>
+                    <th>Principal Amount</th>
+                    <th>Interest Made</th>
+                    <th>To Repay (+20%)</th>
+                    <th>Date Issued</th>
+                    <th>Deadline</th>
+                    <th>Date Repaid</th>
+                </tr>
+            </thead>
+            <tbody id="loan-ledger-body">
+                <!-- Rendered by JS -->
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        const STORAGE_KEY = 'tiyeseFinancialApp_v3'; // Incremented version to capture new committee data structure
+        const INTEREST_RATE = 0.20; 
+        
+        const DEFAULT_NAMES = ["Chipande", "Chisala", "Dailes", "Gaven", "Gomonda", "Lasten", "Malenga", "Malinga", "Ms Lasten", "Ms Malinga"].sort();
+        
+        let systemDate;
+        let totalInterestEarned;
+        let members;
+        let committee;
+
+        // --- LOCAL STORAGE LOGIC ---
+        function loadData() {
+            const savedData = localStorage.getItem(STORAGE_KEY);
+            if (savedData) {
+                const parsed = JSON.parse(savedData);
+                systemDate = new Date(parsed.systemDate);
+                totalInterestEarned = parsed.totalInterestEarned;
+                members = parsed.members;
+                committee = parsed.committee || defaultCommittee();
+                
+                members.forEach(m => {
+                    if(!m.loanHistory) m.loanHistory = [];
+                    if(!m.activeLoans) m.activeLoans = [];
+                });
+            } else {
+                systemDate = new Date(); 
+                totalInterestEarned = 0;
+                committee = defaultCommittee();
+                members = DEFAULT_NAMES.map((name, index) => ({
+                    id: index,
+                    name: name,
+                    contribJuly: 0,
+                    contribAugust: 0,
+                    activeLoans: [], 
+                    loanHistory: [] 
+                }));
+            }
+        }
+
+        function defaultCommittee() {
+            return {
+                chair: { name: "", phone: "" },
+                secretary: { name: "", phone: "" },
+                treasurer: { name: "", phone: "", bank: "", acc: "" }
+            };
+        }
+
+        function saveData() {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify({
+                systemDate: systemDate.toISOString(),
+                totalInterestEarned: totalInterestEarned,
+                members: members,
+                committee: committee
+            }));
+        }
+
+        function resetAllData() {
+            if(confirm("Are you sure you want to delete all contributions, loans, and committee settings? This cannot be undone!")) {
+                localStorage.removeItem(STORAGE_KEY);
+                location.reload(); 
+            }
+        }
+        // ---------------------------
+
+        function formatMoney(amount) {
+            return "MK " + amount.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
+        }
+
+        function formatDate(dateStr) {
+            if(!dateStr) return "N/A";
+            return new Date(dateStr).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' });
+        }
+
+        function addMonths(dateStr, months) {
+            const d = new Date(dateStr);
+            d.setMonth(d.getMonth() + months);
+            return d.toISOString().split('T')[0];
+        }
+
+        function updateSystemDate() {
+            systemDate = new Date(document.getElementById('system-date').value);
+            saveData();
+            checkAlertsAndMeetings();
+            renderDashboard();
+        }
+
+        function saveCommittee() {
+            committee.chair.name = document.getElementById('chair-name').value;
+            committee.chair.phone = document.getElementById('chair-phone').value;
+            
+            committee.secretary.name = document.getElementById('sec-name').value;
+            committee.secretary.phone = document.getElementById('sec-phone').value;
+            
+            committee.treasurer.name = document.getElementById('tres-name').value;
+            committee.treasurer.phone = document.getElementById('tres-phone').value;
+            committee.treasurer.bank = document.getElementById('tres-bank').value;
+            committee.treasurer.acc = document.getElementById('tres-acc').value;
+
+            saveData();
+            renderCommittee();
+            alert("Committee details saved successfully!");
+        }
+
+        function renderCommittee() {
+            // Fill Inputs
+            document.getElementById('chair-name').value = committee.chair.name;
+            document.getElementById('chair-phone').value = committee.chair.phone;
+            
+            document.getElementById('sec-name').value = committee.secretary.name;
+            document.getElementById('sec-phone').value = committee.secretary.phone;
+            
+            document.getElementById('tres-name').value = committee.treasurer.name;
+            document.getElementById('tres-phone').value = committee.treasurer.phone;
+            document.getElementById('tres-bank').value = committee.treasurer.bank;
+            document.getElementById('tres-acc').value = committee.treasurer.acc;
+
+            // Fill Display Card
+            document.getElementById('display-bank').innerText = committee.treasurer.bank || "Not set";
+            document.getElementById('display-acc').innerText = committee.treasurer.acc || "Not set";
+            document.getElementById('display-tres').innerText = committee.treasurer.name || "Not set";
+            document.getElementById('display-tres-phone').innerText = committee.treasurer.phone || "N/A";
+        }
+
+        function checkAlertsAndMeetings() {
+            const alertsArea = document.getElementById('alerts-area');
+            alertsArea.innerHTML = '';
+            const endOfMonth = new Date(systemDate.getFullYear(), systemDate.getMonth() + 1, 0);
+            const daysToMeeting = Math.floor((endOfMonth - systemDate) / (1000 * 60 * 60 * 24));
+            
+            document.getElementById('meeting-flag').innerText = `Next Meeting: ${formatDate(endOfMonth)}`;
+            
+            if (daysToMeeting <= 3 && daysToMeeting >= 0) {
+                alertsArea.innerHTML += `<div class="alert alert-meeting">📅 Reminder: Monthly meeting is in ${daysToMeeting} days!</div>`;
+            } else if (daysToMeeting < 0) {
+                alertsArea.innerHTML += `<div class="alert alert-meeting">📅 Reminder: The monthly meeting is TODAY / PAST DUE!</div>`;
+            }
+
+            members.forEach(m => {
+                m.activeLoans.forEach(loan => {
+                    const dueDateObj = new Date(loan.dueDate);
+                    if (systemDate > dueDateObj) {
+                        loan.isOverdue = true;
+                        alertsArea.innerHTML += `<div class="alert alert-danger">🚨 <strong>${m.name}</strong> has an overdue loan of ${formatMoney(loan.amount)}! Deadline was ${formatDate(loan.dueDate)}.</div>`;
+                    } else {
+                        loan.isOverdue = false;
+                        const diffDays = Math.floor((dueDateObj - systemDate) / (1000 * 60 * 60 * 24));
+                        if(diffDays <= 5) {
+                            alertsArea.innerHTML += `<div class="alert alert-warning">⚠️ <strong>${m.name}</strong>'s loan of ${formatMoney(loan.amount)} is due in ${diffDays} days.</div>`;
+                        }
+                    }
+                });
+            });
+        }
+
+        function checkLoanRules() {
+            const amount = parseFloat(document.getElementById('loan-amount').value) || 0;
+            const monthsSelect = document.getElementById('loan-months');
+            const hint = document.getElementById('loan-rule-hint');
+
+            if (amount >= 500000) {
+                monthsSelect.innerHTML = `<option value="1">1 Month</option><option value="2">2 Months (Allowed for ≥500k)</option>`;
+                hint.innerText = "Amount ≥ MK 500,000: Allowed to repay in up to 2 months.";
+            } else {
+                monthsSelect.innerHTML = `<option value="1">1 Month</option>`;
+                if(amount > 0) hint.innerText = "Amount < MK 500,000: Must repay in 1 month.";
+                else hint.innerText = "";
+            }
+        }
+
+        function renderDashboard() {
+            let totalContribs = 0;
+            let activeLoansTotal = 0;
+            
+            const contribMemberSelect = document.getElementById('contrib-member');
+            const loanMemberSelect = document.getElementById('loan-member');
+            const container = document.getElementById('members-container');
+            const ledgerBody = document.getElementById('loan-ledger-body');
+            
+            const withLoansList = document.getElementById('members-with-loans');
+            const withoutLoansList = document.getElementById('members-without-loans');
+
+            contribMemberSelect.innerHTML = '<option value="">-- Select Member --</option>';
+            loanMemberSelect.innerHTML = '<option value="">-- Select Member --</option>';
+            container.innerHTML = '';
+            ledgerBody.innerHTML = '';
+            withLoansList.innerHTML = '';
+            withoutLoansList.innerHTML = '';
+
+            members.forEach(m => {
+                const totalMContrib = m.contribJuly + m.contribAugust;
+                totalContribs += totalMContrib;
+                
+                const memberActiveLoansSum = m.activeLoans.reduce((sum, loan) => sum + loan.amount, 0);
+                activeLoansTotal += memberActiveLoansSum;
+
+                // --- 1. Populate Dropdowns based on Rules ---
+                if (m.contribJuly < 100000 || m.contribAugust < 100000) {
+                    contribMemberSelect.innerHTML += `<option value="${m.id}">${m.name}</option>`;
+                }
+
+                if (memberActiveLoansSum < 500000) {
+                    loanMemberSelect.innerHTML += `<option value="${m.id}">${m.name}</option>`;
+                }
+
+                // --- 2. Populate Loan Summary Grid ---
+                if (memberActiveLoansSum > 0) {
+                    withLoansList.innerHTML += `<li><strong>${m.name}</strong> <span>${formatMoney(memberActiveLoansSum)}</span></li>`;
+                } else {
+                    withoutLoansList.innerHTML += `<li><strong>${m.name}</strong> <span>--</span></li>`;
+                }
+
+                // --- 3. Render Member Cascading Cards ---
+                let loanHtml = '';
+                let hasOverdue = false;
+
+                if (m.activeLoans.length === 0) {
+                    loanHtml = `<p><i>No active loans</i></p>`;
+                } else {
+                    m.activeLoans.forEach((loan, index) => {
+                        if (loan.isOverdue) hasOverdue = true;
+                        loanHtml += `
+                            <div class="active-loan-item">
+                                <p><strong>Principal:</strong> ${formatMoney(loan.amount)}</p>
+                                <p><strong>Total to Repay:</strong> <span style="color:var(--danger); font-weight:bold;">${formatMoney(loan.totalRepay)}</span></p>
+                                <p><strong>Issued:</strong> ${formatDate(loan.issueDate)} | <strong>Deadline:</strong> ${formatDate(loan.dueDate)}</p>
+                                <button class="btn-pay" onclick="repayLoan(${m.id}, ${index})">Mark as Repaid</button>
+                            </div>
+                        `;
+                    });
+                }
+
+                let badge = '';
+                if (m.activeLoans.length > 0) {
+                    const statusClass = hasOverdue ? 'bg-danger' : 'bg-warning';
+                    const statusText = hasOverdue ? 'OVERDUE LOAN' : 'ACTIVE LOAN';
+                    badge = `<span class="status-badge ${statusClass}">${statusText}</span>`;
+                }
+                
+                container.innerHTML += `
+                    <details>
+                        <summary>
+                            <span>${m.name} ${badge}</span>
+                            <span>Total Contributed: ${formatMoney(totalMContrib)} / MK 200,000</span>
+                        </summary>
+                        <div class="details-content">
+                            <div class="member-stat-box">
+                                <h4>CONTRIBUTIONS</h4>
+                                <p><strong>July:</strong> ${formatMoney(m.contribJuly)} ${m.contribJuly >= 100000 ? '✅' : ''}</p>
+                                <p><strong>August:</strong> ${formatMoney(m.contribAugust)} ${m.contribAugust >= 100000 ? '✅' : ''}</p>
+                            </div>
+                            <div class="member-stat-box">
+                                <h4>LOAN STATUS</h4>
+                                ${loanHtml}
+                            </div>
+                        </div>
+                    </details>
+                `;
+
+                // --- 4. Render Comprehensive Ledger Table ---
+                m.loanHistory.forEach(hist => {
+                    const interestMade = hist.totalRepay - hist.amount;
+                    ledgerBody.innerHTML += `
+                        <tr>
+                            <td><strong>${m.name}</strong></td>
+                            <td><span class="status-badge bg-success">Repaid</span></td>
+                            <td>${formatMoney(hist.amount)}</td>
+                            <td style="color: var(--success); font-weight:bold;">+${formatMoney(interestMade)}</td>
+                            <td>${formatMoney(hist.totalRepay)}</td>
+                            <td>${formatDate(hist.issueDate)}</td>
+                            <td>${formatDate(hist.dueDate)}</td>
+                            <td><strong>${formatDate(hist.repayDate)}</strong></td>
+                        </tr>
+                    `;
+                });
+
+                m.activeLoans.forEach(loan => {
+                    const interestExpected = loan.totalRepay - loan.amount;
+                    const statusClass = loan.isOverdue ? 'bg-danger' : 'bg-warning';
+                    const statusText = loan.isOverdue ? 'Overdue' : 'Active';
+                    ledgerBody.innerHTML += `
+                        <tr style="background-color: #fffde7;">
+                            <td><strong>${m.name}</strong></td>
+                            <td><span class="status-badge ${statusClass}">${statusText}</span></td>
+                            <td>${formatMoney(loan.amount)}</td>
+                            <td style="color: var(--accent);">+${formatMoney(interestExpected)}</td>
+                            <td style="color:var(--danger); font-weight:bold;">${formatMoney(loan.totalRepay)}</td>
+                            <td>${formatDate(loan.issueDate)}</td>
+                            <td>${formatDate(loan.dueDate)}</td>
+                            <td><i>Pending...</i></td>
+                        </tr>
+                    `;
+                });
+            });
+
+            document.getElementById('total-contributions').innerText = formatMoney(totalContribs);
+            document.getElementById('total-interest').innerText = formatMoney(totalInterestEarned);
+            document.getElementById('active-loans-value').innerText = formatMoney(activeLoansTotal);
+        }
+
+        function addContribution() {
+            const id = document.getElementById('contrib-member').value;
+            const month = document.getElementById('contrib-month').value;
+            const amount = parseFloat(document.getElementById('contrib-amount').value);
+
+            if (id === "" || isNaN(amount) || amount <= 0) return alert("Invalid inputs.");
+            const member = members[id];
+            
+            if (month === "July") {
+                if (member.contribJuly + amount > 100000) return alert("July contribution cannot exceed MK 100,000.");
+                member.contribJuly += amount;
+            } else {
+                if (member.contribAugust + amount > 100000) return alert("August contribution cannot exceed MK 100,000.");
+                member.contribAugust += amount;
+            }
+
+            document.getElementById('contrib-amount').value = '';
+            saveData(); 
+            renderDashboard();
+        }
+
+        function issueLoan() {
+            const id = document.getElementById('loan-member').value;
+            const amount = parseFloat(document.getElementById('loan-amount').value);
+            const issueDate = document.getElementById('loan-issue-date').value;
+            const months = parseInt(document.getElementById('loan-months').value);
+
+            if (id === "" || isNaN(amount) || amount <= 0 || !issueDate) return alert("Please fill all loan fields.");
+            
+            const member = members[id];
+            
+            const currentLoanSum = member.activeLoans.reduce((sum, l) => sum + l.amount, 0);
+            if (currentLoanSum >= 500000) {
+                return alert("Member already has MK 500,000 or more in active loans and cannot take another.");
+            }
+
+            member.activeLoans.push({
+                amount: amount,
+                issueDate: issueDate,
+                dueDate: addMonths(issueDate, months),
+                months: months,
+                totalRepay: amount + (amount * (INTEREST_RATE * months)),
+                isOverdue: false
+            });
+
+            document.getElementById('loan-amount').value = '';
+            document.getElementById('loan-issue-date').value = '';
+            
+            saveData(); 
+            checkLoanRules(); 
+            checkAlertsAndMeetings();
+            renderDashboard();
+        }
+
+        function repayLoan(memberId, loanIndex) {
+            const member = members[memberId];
+            const loan = member.activeLoans[loanIndex];
+
+            if(confirm(`Confirm ${member.name} has paid ${formatMoney(loan.totalRepay)} for this specific loan?`)) {
+                totalInterestEarned += (loan.totalRepay - loan.amount);
+                
+                member.loanHistory.push({
+                    amount: loan.amount,
+                    totalRepay: loan.totalRepay,
+                    issueDate: loan.issueDate,
+                    dueDate: loan.dueDate,
+                    repayDate: systemDate.toISOString() 
+                });
+
+                member.activeLoans.splice(loanIndex, 1);
+                
+                saveData();
+                checkAlertsAndMeetings();
+                renderDashboard();
+            }
+        }
+
+        // --- INIT APP ---
+        loadData(); 
+        document.getElementById('system-date').valueAsDate = systemDate;
+        
+        renderCommittee(); // Load committee info immediately
+        checkAlertsAndMeetings();
+        renderDashboard();
+    </script>
+</body>
+</html>
